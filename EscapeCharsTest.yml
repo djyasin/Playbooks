@@ -1,0 +1,27 @@
+---
+- name: Reproduce double escaping of quotes in API output
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: 1. Create a file with content containing an escaped quote
+      ansible.builtin.copy:
+        dest: "/tmp/awx_quote_test.txt"
+        content: 'This is some sample output with an \"escaped quote\".'
+
+    - name: 2. Read the file to generate stdout
+      # This task's standard output will be the raw content from the file.
+      ansible.builtin.command:
+        cmd: "cat /tmp/awx_quote_test.txt"
+      register: command_output
+
+    - name: 3. Display stdout within the job run (for comparison)
+      ansible.builtin.debug:
+        var: command_output.stdout
+
+    - name: 4. Clean up the temporary file
+      ansible.builtin.file:
+        path: "/tmp/awx_quote_test.txt"
+        state: absent
+
