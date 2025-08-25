@@ -5,13 +5,14 @@
   gather_facts: false
 
   tasks:
-    - name: 1. Create a file with content containing an escaped quote
+    - name: 1. Create a file with both plain and escaped quotes
       ansible.builtin.copy:
         dest: "/tmp/awx_quote_test.txt"
-        content: 'This is some sample output with an \"escaped quote\".'
+        content: |
+          Normal: "plain quote"
+          Escaped: \"escaped quote\"
 
     - name: 2. Read the file to generate stdout
-      # This task's standard output will be the raw content from the file.
       ansible.builtin.command:
         cmd: "cat /tmp/awx_quote_test.txt"
       register: command_output
