@@ -1,0 +1,32 @@
+---
+- name: Create temporary file with multiline text and tail it
+  hosts: localhost
+  connection: local   # 👈 Run tasks locally, no SSH
+  gather_facts: false
+
+  tasks:
+    - name: Create temporary file with multiline content
+      copy:
+        content: |
+          This is a line
+          "This is another line"
+        dest: /tmp/multiline_test_file.txt
+        mode: '0644'
+      register: temp_file_result
+
+    - name: Display the temporary file path
+      debug:
+        msg: "Temporary file created at: {{ temp_file_result.dest }}"
+
+    - name: Run tail command on the temporary file
+      command: tail --bytes 20480k /tmp/multiline_test_file.txt
+      register: tail_output
+
+    - name: Display tail command output
+      debug:
+        msg: "Last 5 lines of the file:"
+
+    - name: Show the tail results
+      debug:
+        var: tail_output.stdout_lines
+
