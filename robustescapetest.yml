@@ -1,5 +1,5 @@
 ---
-- name: Create temporary files with escape sequences and tail them
+- name: Create temporary files with escape sequences and display them clearly
   hosts: localhost
   connection: local
   gather_facts: false
@@ -18,7 +18,6 @@
           End of single-escaped file
         dest: /tmp/escape_test_file_single.txt
         mode: '0644'
-      register: single_file_result
 
     - name: Create file with double-escaped sequences
       copy:
@@ -26,34 +25,33 @@
           Normal line
           Double-escaped single quote: \\\'
           Double-escaped double quote: \\\"
-          Double-escaped backslash: \\\\
-          Double-escaped newline: \\\\n
-          Double-escaped carriage return: \\\\r
-          Double-escaped tab: \\\\t
+          Double-escaped backslash: \\\\\
+          Double-escaped newline: \\\\\\n
+          Double-escaped carriage return: \\\\\\r
+          Double-escaped tab: \\\\\\t
           End of double-escaped file
         dest: /tmp/escape_test_file_double.txt
         mode: '0644'
-      register: double_file_result
-
-    - name: Tail single-escaped file and show content
-      command: tail --bytes 20480k /tmp/escape_test_file_single.txt
-      register: single_tail_output
-      changed_when: false
-
-    - name: Tail double-escaped file and show content
-      command: tail --bytes 20480k /tmp/escape_test_file_double.txt
-      register: double_tail_output
-      changed_when: false
 
     - name: Display single-escaped file content
+      shell: cat /tmp/escape_test_file_single.txt
+      register: single_output
+      changed_when: false
+
+    - name: Display double-escaped file content
+      shell: cat /tmp/escape_test_file_double.txt
+      register: double_output
+      changed_when: false
+
+    - name: Print single-escaped file clearly
       debug:
         msg: |
           --- Single-Escaped File ---
-          {{ single_tail_output.stdout }}
+          {{ single_output.stdout }}
 
-    - name: Display double-escaped file content
+    - name: Print double-escaped file clearly
       debug:
         msg: |
           --- Double-Escaped File ---
-          {{ double_tail_output.stdout }}
+          {{ double_output.stdout }}
 
