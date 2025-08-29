@@ -35,34 +35,25 @@
         mode: '0644'
       register: double_file_result
 
-    - name: Show created file paths
-      debug:
-        msg:
-          - "Single-escaped file: {{ single_file_result.dest }}"
-          - "Double-escaped file: {{ double_file_result.dest }}"
-
-    - name: Run tail on single-escaped file
+    - name: Tail single-escaped file and show content
       command: tail --bytes 20480k /tmp/escape_test_file_single.txt
       register: single_tail_output
+      changed_when: false
 
-    - name: Run tail on double-escaped file
+    - name: Tail double-escaped file and show content
       command: tail --bytes 20480k /tmp/escape_test_file_double.txt
       register: double_tail_output
+      changed_when: false
 
-    - name: Show single-escaped file output (raw)
+    - name: Display single-escaped file content
       debug:
-        var: single_tail_output.stdout
+        msg: |
+          --- Single-Escaped File ---
+          {{ single_tail_output.stdout }}
 
-    - name: Show single-escaped file output (lines)
+    - name: Display double-escaped file content
       debug:
-        var: single_tail_output.stdout_lines
-
-    - name: Show double-escaped file output (raw)
-      debug:
-        var: double_tail_output.stdout
-
-    - name: Show double-escaped file output (lines)
-      debug:
-        var: double_tail_output.stdout_lines
-
+        msg: |
+          --- Double-Escaped File ---
+          {{ double_tail_output.stdout }}
 
